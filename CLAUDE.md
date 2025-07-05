@@ -557,3 +557,288 @@ Agent Activity:
 ---
 
 Remember: **ruv-swarm coordinates, Claude Code creates!** Start with `mcp__ruv-swarm__swarm_init` to enhance your development workflow.
+
+## 📋 MANDATORY: GitHub Project Management
+
+### 🎯 CRITICAL INSTRUCTION: ALWAYS Use GitHub MCP for Project Management
+
+**MANDATORY**: For ALL project management tasks, you MUST:
+1. **USE GITHUB MCP TOOLS** - Never manage project status outside GitHub
+2. **CREATE ISSUES FOR ALL TASKS** - Every feature, bug, or task gets an issue
+3. **UPDATE ISSUES REGULARLY** - Keep issue status current with progress
+4. **USE LABELS AND MILESTONES** - Organize work with proper categorization
+5. **TRACK ALL DECISIONS** - Document architectural and implementation decisions in issues
+
+### 📊 GitHub MCP Tools (MANDATORY Usage)
+
+**Issue Management (Primary Tools):**
+- `mcp__github__create_issue` - Create new issues for all tasks/features
+- `mcp__github__update_issue` - Update status, assignees, labels
+- `mcp__github__add_issue_comment` - Document progress and decisions
+- `mcp__github__list_issues` - Review current project status
+- `mcp__github__get_issue` - Get detailed issue information
+
+**Project Organization:**
+- `mcp__github__create_pull_request` - Submit code changes with linked issues
+- `mcp__github__search_issues` - Find related issues and dependencies
+- `mcp__github__create_repository` - Set up new project repositories
+- `mcp__github__push_files` - Deploy documentation and configurations
+
+### 🚨 MANDATORY WORKFLOW PATTERN
+
+#### **1. Every Task = GitHub Issue**
+```javascript
+// ✅ CORRECT: Create issue for every task
+[Single Message]:
+  mcp__github__create_issue {
+    title: "🎯 [FEATURE] Implement file upload system",
+    body: "Detailed requirements and acceptance criteria",
+    labels: ["feature", "high-priority", "frontend"],
+    assignees: ["developer-username"]
+  }
+```
+
+#### **2. Regular Progress Updates**
+```javascript
+// ✅ CORRECT: Update issues as work progresses
+[Single Message]:
+  mcp__github__add_issue_comment {
+    issue_number: 123,
+    body: "✅ Completed drag & drop functionality\n🔄 Working on file validation\n⭕ Next: Progress indicators"
+  }
+  mcp__github__update_issue {
+    issue_number: 123,
+    state: "open",
+    labels: ["feature", "high-priority", "frontend", "in-progress"]
+  }
+```
+
+#### **3. Batch Issue Operations**
+```javascript
+// ✅ CORRECT: Create multiple related issues in one batch
+[Single Message]:
+  mcp__github__create_issue { title: "🏗️ [ARCHITECTURE] Database schema design", ... }
+  mcp__github__create_issue { title: "🔐 [SECURITY] Authentication system", ... }
+  mcp__github__create_issue { title: "📱 [FRONTEND] User interface components", ... }
+  mcp__github__create_issue { title: "🧪 [TESTING] Test framework setup", ... }
+  mcp__github__create_issue { title: "🚀 [DEPLOYMENT] CI/CD pipeline", ... }
+```
+
+### 📋 Issue Templates (MANDATORY Format)
+
+#### **Feature Issues**
+```markdown
+## 🎯 Feature: [Feature Name]
+
+### 📋 Description
+[Detailed description of the feature]
+
+### 🎨 Requirements
+- [ ] Requirement 1
+- [ ] Requirement 2
+- [ ] Requirement 3
+
+### 🛠️ Technical Implementation
+- **Technology**: [Tech stack]
+- **Components**: [Components to build]
+- **Dependencies**: [Dependencies needed]
+
+### ✅ Acceptance Criteria
+- [ ] Criteria 1
+- [ ] Criteria 2
+- [ ] Criteria 3
+
+### 🔗 Related Issues
+- Depends on: #[issue-number]
+- Blocks: #[issue-number]
+
+**Priority**: [High/Medium/Low]
+**Estimated effort**: [Time estimate]
+**Assignee**: [Username]
+```
+
+#### **Bug Issues**
+```markdown
+## 🐛 Bug: [Bug Title]
+
+### 📋 Description
+[Description of the bug]
+
+### 🔄 Steps to Reproduce
+1. Step 1
+2. Step 2
+3. Step 3
+
+### 🎯 Expected Behavior
+[What should happen]
+
+### ❌ Actual Behavior
+[What actually happens]
+
+### 🛠️ Environment
+- OS: [Operating System]
+- Browser: [Browser version]
+- Node.js: [Version]
+
+### 📊 Impact
+**Severity**: [Critical/High/Medium/Low]
+**Priority**: [High/Medium/Low]
+```
+
+#### **Epic Issues**
+```markdown
+## 🚀 Epic: [Epic Name]
+
+### 📋 Description
+[High-level description of the epic]
+
+### 🎯 Goals
+- Goal 1
+- Goal 2
+- Goal 3
+
+### 📊 Sub-Issues
+- [ ] #[issue] - [Sub-issue title]
+- [ ] #[issue] - [Sub-issue title]
+- [ ] #[issue] - [Sub-issue title]
+
+### 🏁 Success Criteria
+- [ ] Criteria 1
+- [ ] Criteria 2
+
+**Timeline**: [Duration]
+**Team**: [Team members]
+```
+
+### 🏷️ Standard Labels (MANDATORY Usage)
+
+#### **Type Labels**
+- `feature` - New functionality
+- `bug` - Bug fixes
+- `enhancement` - Improvements to existing features
+- `documentation` - Documentation updates
+- `testing` - Testing-related tasks
+- `architecture` - System design and architecture
+- `security` - Security-related issues
+- `performance` - Performance optimizations
+
+#### **Priority Labels**
+- `critical` - Must be fixed immediately
+- `high-priority` - Important, high impact
+- `medium-priority` - Standard priority
+- `low-priority` - Nice to have
+
+#### **Component Labels**
+- `frontend` - Frontend/UI work
+- `backend` - Backend/API work
+- `database` - Database-related
+- `infrastructure` - DevOps/Infrastructure
+- `agents` - AI agent system
+- `compliance` - Compliance features
+- `rag` - RAG system features
+
+#### **Status Labels**
+- `in-progress` - Currently being worked on
+- `blocked` - Blocked by dependencies
+- `needs-review` - Ready for review
+- `ready-to-test` - Ready for testing
+
+### 📊 Project Status Tracking (MANDATORY Format)
+
+#### **Weekly Status Updates**
+```javascript
+// ✅ Create weekly status issue
+mcp__github__create_issue {
+  title: "📊 Weekly Status: [Date Range]",
+  body: `
+## 📊 Progress Overview
+- ✅ Completed: X issues
+- 🔄 In Progress: X issues  
+- ⭕ Planned: X issues
+- ❌ Blocked: X issues
+
+## 🎯 Key Accomplishments
+- [Accomplishment 1]
+- [Accomplishment 2]
+
+## 🚧 Current Focus
+- [Current priority 1]
+- [Current priority 2]
+
+## ⚠️ Blockers & Risks
+- [Blocker 1]
+- [Risk 1]
+
+## 📅 Next Week Goals
+- [Goal 1]
+- [Goal 2]
+  `,
+  labels: ["status", "weekly-update"]
+}
+```
+
+### 🔄 Integration with Swarm Workflow
+
+#### **Swarm + GitHub Pattern**
+```javascript
+// ✅ CORRECT: Coordinate swarm work through GitHub
+[Single Message]:
+  // 1. Initialize swarm
+  mcp__ruv-swarm__swarm_init { topology: "mesh", maxAgents: 5 }
+  
+  // 2. Create GitHub issues for coordination
+  mcp__github__create_issue { title: "🏗️ [SWARM] System Architecture Design", ... }
+  mcp__github__create_issue { title: "🔬 [SWARM] Research Phase", ... }
+  mcp__github__create_issue { title: "🚀 [SWARM] Implementation Phase", ... }
+  
+  // 3. Spawn agents with GitHub issue references
+  mcp__ruv-swarm__agent_spawn { 
+    type: "architect", 
+    name: "System Designer",
+    task_reference: "GitHub Issue #123"
+  }
+  
+  // 4. Update todos to reference GitHub issues
+  TodoWrite { todos: [
+    { id: "arch", content: "Complete system architecture (GitHub #123)", status: "in_progress" },
+    { id: "research", content: "Research AWS Bedrock (GitHub #124)", status: "pending" }
+  ]}
+```
+
+### ⚡ Performance Benefits of GitHub Integration
+
+When using GitHub MCP with ruv-swarm:
+- **Centralized tracking** - All work visible in one place
+- **Better coordination** - Issues provide context for agents
+- **Persistent memory** - GitHub serves as long-term project memory
+- **Stakeholder visibility** - Non-technical stakeholders can track progress
+- **Automated workflows** - GitHub Actions integration potential
+
+### 🎯 SUCCESS CRITERIA
+
+**MANDATORY Requirements:**
+- [ ] **Every task has a GitHub issue** - No work without tracking
+- [ ] **Issues updated within 24 hours** - Keep status current
+- [ ] **Proper labels on all issues** - Enable filtering and organization
+- [ ] **Linked issues for dependencies** - Show relationships clearly
+- [ ] **Regular status updates** - Weekly progress summaries
+- [ ] **Pull requests linked to issues** - Connect code to requirements
+
+**❌ NEVER Do This:**
+- Work on tasks without GitHub issues
+- Use external project management tools instead of GitHub
+- Create issues without proper labels and descriptions
+- Leave issues stale without updates
+- Skip linking pull requests to issues
+
+**✅ ALWAYS Do This:**
+- Create GitHub issues before starting any work
+- Update issue status as progress is made
+- Use consistent labeling and formatting
+- Reference related issues and dependencies
+- Document decisions and rationale in issue comments
+- Close issues only when work is fully complete and tested
+
+---
+
+Remember: **GitHub Issues are the single source of truth for project status.** Every decision, task, and milestone MUST be tracked through GitHub MCP tools.

@@ -1,0 +1,9 @@
+{
+  "model": "feedforward",
+  "iterations": 200,
+  "learningRate": 0.001,
+  "finalAccuracy": "91.4",
+  "finalLoss": "0.0250",
+  "timestamp": "2025-07-05T09:46:37.353Z",
+  "duration": 20000
+}

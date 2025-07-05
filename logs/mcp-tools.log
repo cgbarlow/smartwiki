@@ -15,3 +15,942 @@
   component: [32m'mcp-tools-enhanced'[39m,
   swarmId: [32m'swarm-1751702662987'[39m
 }
+[2m[09:35:24.602][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    enableCognitiveDiversity: [33mtrue[39m,
+    enableForecasting: [33mfalse[39m,
+    enableNeuralAgents: [33mtrue[39m,
+    maxAgents: [33m5[39m,
+    strategy: [32m'balanced'[39m,
+    topology: [32m'mesh'[39m
+  }
+}
+[2m[09:35:24.615][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751708124603'[39m
+}
+[2m[10:13:33.368][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m MCP Warning
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  context: {
+    activeSwarms: [
+      [32m'swarm-1751702662987'[39m,
+      [32m'swarm-1751708124603'[39m
+    ],
+    operation: [32m'task_orchestration'[39m,
+    params: {
+      strategy: [32m'adaptive'[39m,
+      task: [32m'your mission is to create a comprehensive plan for a new app based on requirements listed in requirements/requirements.md. spawn a 5-agent swarm for this. use github mcp to create issues etc and manage the project using tdd'[39m
+    },
+    rawParams: {
+      strategy: [32m'adaptive'[39m,
+      task: [32m'your mission is to create a comprehensive plan for a new app based on requirements listed in requirements/requirements.md. spawn a 5-agent swarm for this. use github mcp to create issues etc and manage the project using tdd'[39m
+    },
+    startTime: [33m86.047545[39m,
+    timestamp: [32m'2025-07-05T10:13:33.368Z'[39m,
+    tool: [32m'task_orchestrate'[39m,
+    validating: [32m'task_orchestrate'[39m
+  },
+  error: {
+    code: [32m'AGENT_ERROR'[39m,
+    message: [32m'No suitable agents available for task: No agents available for task orchestration. Please spawn agents first.'[39m,
+    name: [32m'AgentError'[39m,
+    stack: [32m'AgentError: No suitable agents available for task: No agents available for task orchestration. Please spawn agents first.\n'[39m +
+      [32m'    at ErrorFactory.createError (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/errors.js:431:14)\n'[39m +
+      [32m'    at EnhancedMCPTools.task_orchestrate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:819:37)\n'[39m +
+      [32m'    at async handleOrchestrate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:322:24)\n'[39m +
+      [32m'    at async main (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:1773:17)'[39m
+  },
+  operation: [32m'task_orchestration'[39m,
+  recoverable: [33mfalse[39m,
+  severity: [32m'medium'[39m,
+  suggestions: [
+    [32m'Review agent configuration and requirements'[39m
+  ],
+  tool: [32m'task_orchestrate'[39m
+}
+[2m[10:16:03.903][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    enableCognitiveDiversity: [33mtrue[39m,
+    enableForecasting: [33mfalse[39m,
+    enableNeuralAgents: [33mtrue[39m,
+    maxAgents: [33m5[39m,
+    strategy: [32m'balanced'[39m,
+    topology: [32m'mesh'[39m
+  }
+}
+[2m[10:16:03.908][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751710563904'[39m
+}
+[2m[10:16:15.003][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m MCP Warning
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  context: {
+    activeSwarms: [
+      [32m'swarm-1751702662987'[39m,
+      [32m'swarm-1751708124603'[39m,
+      [32m'swarm-1751710563904'[39m
+    ],
+    operation: [32m'task_orchestration'[39m,
+    params: {
+      strategy: [32m'adaptive'[39m,
+      task: [32m'your mission is to create a comprehensive plan for a new app based on requirements listed in requirements/requirements.md. spawn a 5-agent swarm for this. use github mcp to create issues etc and manage the project using tdd'[39m
+    },
+    rawParams: {
+      strategy: [32m'adaptive'[39m,
+      task: [32m'your mission is to create a comprehensive plan for a new app based on requirements listed in requirements/requirements.md. spawn a 5-agent swarm for this. use github mcp to create issues etc and manage the project using tdd'[39m
+    },
+    startTime: [33m90.775502[39m,
+    timestamp: [32m'2025-07-05T10:16:15.002Z'[39m,
+    tool: [32m'task_orchestrate'[39m,
+    validating: [32m'task_orchestrate'[39m
+  },
+  error: {
+    code: [32m'AGENT_ERROR'[39m,
+    message: [32m'No suitable agents available for task: No agents available for task orchestration. Please spawn agents first.'[39m,
+    name: [32m'AgentError'[39m,
+    stack: [32m'AgentError: No suitable agents available for task: No agents available for task orchestration. Please spawn agents first.\n'[39m +
+      [32m'    at ErrorFactory.createError (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/errors.js:431:14)\n'[39m +
+      [32m'    at EnhancedMCPTools.task_orchestrate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:819:37)\n'[39m +
+      [32m'    at async handleOrchestrate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:322:24)\n'[39m +
+      [32m'    at async main (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:1773:17)'[39m
+  },
+  operation: [32m'task_orchestration'[39m,
+  recoverable: [33mfalse[39m,
+  severity: [32m'medium'[39m,
+  suggestions: [
+    [32m'Review agent configuration and requirements'[39m
+  ],
+  tool: [32m'task_orchestrate'[39m
+}
+[2m[10:19:58.305][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    maxAgents: [33m5[39m,
+    strategy: [32m'specialized'[39m,
+    topology: [32m'hierarchical'[39m
+  }
+}
+[2m[10:19:58.312][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751710798309'[39m
+}
+[2m[10:19:58.420][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'system_design'[39m,
+      [32m'aws_architecture'[39m,
+      [32m'rag_systems'[39m,
+      [32m'multi_tenant'[39m
+    ],
+    name: [32m'System Architect'[39m,
+    type: [32m'architect'[39m
+  }
+}
+[2m[10:19:58.426][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m MCP Warning
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  context: {
+    activeSwarms: [
+      [32m'swarm-1751702662987'[39m,
+      [32m'swarm-1751708124603'[39m,
+      [32m'swarm-1751710563904'[39m,
+      [32m'swarm-1751710798309'[39m
+    ],
+    operation: [32m'agent_spawning'[39m,
+    params: {
+      capabilities: [
+        [32m'system_design'[39m,
+        [32m'aws_architecture'[39m,
+        [32m'rag_systems'[39m,
+        [32m'multi_tenant'[39m
+      ],
+      name: [32m'System Architect'[39m,
+      type: [32m'architect'[39m
+    },
+    rawParams: {
+      capabilities: [
+        [32m'system_design'[39m,
+        [32m'aws_architecture'[39m,
+        [32m'rag_systems'[39m,
+        [32m'multi_tenant'[39m
+      ],
+      name: [32m'System Architect'[39m,
+      type: [32m'architect'[39m
+    },
+    startTime: [33m22590.266165[39m,
+    timestamp: [32m'2025-07-05T10:19:58.426Z'[39m,
+    tool: [32m'agent_spawn'[39m,
+    validating: [32m'agent_spawn'[39m
+  },
+  error: {
+    code: [32m'VALIDATION_ERROR'[39m,
+    message: [32m'type must be one of: researcher, coder, analyst, optimizer, coordinator, tester, reviewer, documenter'[39m,
+    name: [32m'ValidationError'[39m,
+    stack: [32m'ValidationError: type must be one of: researcher, coder, analyst, optimizer, coordinator, tester, reviewer, documenter\n'[39m +
+      [32m'    at BaseValidator.validateValue (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:104:13)\n'[39m +
+      [32m'    at BaseValidator.validate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:14:19)\n'[39m +
+      [32m'    at ValidationUtils.validateParams (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:732:52)\n'[39m +
+      [32m'    at EnhancedMCPTools.validateToolParams (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:189:47)\n'[39m +
+      [32m'    at EnhancedMCPTools.agent_spawn (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:573:36)\n'[39m +
+      [32m'    at handleMcpRequest (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:1433:72)\n'[39m +
+      [32m'    at Socket.<anonymous> (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:515:29)\n'[39m +
+      [32m'    at Socket.emit (node:events:530:35)\n'[39m +
+      [32m'    at addChunk (node:internal/streams/readable:561:12)\n'[39m +
+      [32m'    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)'[39m
+  },
+  operation: [32m'agent_spawning'[39m,
+  recoverable: [33mtrue[39m,
+  severity: [32m'medium'[39m,
+  suggestions: [
+    [32m"Check the 'type' parameter"[39m,
+    [32m'Expected type: enum(researcher|coder|analyst|optimizer|coordinator|tester|reviewer|documenter), got: string'[39m
+  ],
+  tool: [32m'agent_spawn'[39m
+}
+[2m[10:19:58.568][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'bedrock_research'[39m,
+      [32m'rag_frameworks'[39m,
+      [32m'file_conversion'[39m,
+      [32m'oauth_systems'[39m
+    ],
+    name: [32m'Tech Research Lead'[39m,
+    type: [32m'researcher'[39m
+  }
+}
+[2m[10:19:58.576][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751710798569'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:19:58.576][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751710798569'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:19:58.720][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'frontend_development'[39m,
+      [32m'backend_apis'[39m,
+      [32m'file_upload'[39m,
+      [32m'markdown_conversion'[39m
+    ],
+    name: [32m'Full-Stack Developer'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[10:19:58.730][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751710798721'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:19:58.731][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751710798721'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:19:58.928][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'agent_architecture'[39m,
+      [32m'compliance_systems'[39m,
+      [32m'rag_integration'[39m,
+      [32m'workflow_design'[39m
+    ],
+    name: [32m'Agent System Designer'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[10:19:58.954][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751710798930'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:19:58.955][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751710798930'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:19:59.169][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'project_planning'[39m,
+      [32m'github_management'[39m,
+      [32m'tdd_coordination'[39m,
+      [32m'milestone_tracking'[39m
+    ],
+    name: [32m'Project Manager'[39m,
+    type: [32m'coordinator'[39m
+  }
+}
+[2m[10:19:59.181][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751710799171'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:19:59.181][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751710799171'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:20:15.202][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'system_design'[39m,
+      [32m'aws_architecture'[39m,
+      [32m'rag_systems'[39m,
+      [32m'multi_tenant'[39m
+    ],
+    name: [32m'System Architect'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[10:20:15.215][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751710815203'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:20:15.216][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751710815203'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:20:15.323][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Failed to persist task
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: tasks.id'[39m,
+  taskId: [32m'task-1751710815300'[39m
+}
+[2m[10:34:00.942][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    maxAgents: [33m3[39m,
+    strategy: [32m'balanced'[39m,
+    topology: [32m'mesh'[39m
+  }
+}
+[2m[10:34:00.950][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751711640946'[39m
+}
+[2m[10:34:01.085][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'project management'[39m,
+      [32m'task delegation'[39m,
+      [32m'progress tracking'[39m
+    ],
+    name: [32m'Lead Coordinator'[39m,
+    type: [32m'coordinator'[39m
+  }
+}
+[2m[10:34:01.091][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751711641086'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:34:01.092][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751711641086'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:34:01.246][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'code development'[39m,
+      [32m'API design'[39m,
+      [32m'database operations'[39m
+    ],
+    name: [32m'Implementation Expert'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[10:34:01.254][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751711641247'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:34:01.254][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751711641247'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:34:01.406][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'code analysis'[39m,
+      [32m'documentation'[39m,
+      [32m'best practices research'[39m
+    ],
+    name: [32m'Documentation Analyst'[39m,
+    type: [32m'researcher'[39m
+  }
+}
+[2m[10:34:01.413][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751711641407'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:34:01.414][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751711641407'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:34:12.665][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Failed to persist task
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: tasks.id'[39m,
+  taskId: [32m'task-1751711652620'[39m
+}
+[2m[10:44:30.732][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    maxAgents: [33m5[39m,
+    strategy: [32m'specialized'[39m,
+    topology: [32m'hierarchical'[39m
+  }
+}
+[2m[10:44:30.741][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751712270737'[39m
+}
+[2m[10:44:30.851][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'github-issues'[39m,
+      [32m'requirements-analysis'[39m
+    ],
+    name: [32m'Issue Analyzer'[39m,
+    type: [32m'researcher'[39m
+  }
+}
+[2m[10:44:30.858][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751712270852'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:44:30.858][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751712270852'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:44:30.975][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'system-design'[39m,
+      [32m'integration-patterns'[39m
+    ],
+    name: [32m'Architecture Designer'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[10:44:30.982][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751712270975'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:44:30.982][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751712270975'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:44:31.088][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'mistral-api'[39m,
+      [32m'model-abstraction'[39m
+    ],
+    name: [32m'API Integration Expert'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[10:44:31.094][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751712271089'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:44:31.095][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751712271089'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:44:31.235][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'compliance-patterns'[39m,
+      [32m'regulatory-frameworks'[39m
+    ],
+    name: [32m'Compliance Specialist'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[10:44:31.244][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751712271235'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:44:31.245][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751712271235'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:44:31.437][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'project-coordination'[39m,
+      [32m'technical-writing'[39m
+    ],
+    name: [32m'Integration Lead'[39m,
+    type: [32m'coordinator'[39m
+  }
+}
+[2m[10:44:31.442][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751712271437'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[10:44:31.443][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751712271437'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[10:44:42.602][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Failed to persist task
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: tasks.id'[39m,
+  taskId: [32m'task-1751712282573'[39m
+}
+[2m[11:08:17.996][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    maxAgents: [33m5[39m,
+    strategy: [32m'adaptive'[39m,
+    topology: [32m'mesh'[39m
+  }
+}
+[2m[11:08:18.007][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751713698001'[39m
+}
+[2m[11:08:18.124][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'documentation analysis'[39m,
+      [32m'requirements gathering'[39m,
+      [32m'AWS Bedrock research'[39m
+    ],
+    name: [32m'Documentation Analyst'[39m,
+    type: [32m'researcher'[39m
+  }
+}
+[2m[11:08:18.130][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713698125'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:08:18.130][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713698125'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:08:18.278][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'GitHub integration'[39m,
+      [32m'task coordination'[39m,
+      [32m'issue tracking'[39m
+    ],
+    name: [32m'Project Manager'[39m,
+    type: [32m'coordinator'[39m
+  }
+}
+[2m[11:08:18.286][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713698279'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:08:18.286][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713698279'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:08:18.411][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'API development'[39m,
+      [32m'database design'[39m,
+      [32m'AWS integration'[39m
+    ],
+    name: [32m'Backend Developer'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[11:08:18.422][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713698411'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:08:18.422][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713698411'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:08:18.560][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'UI development'[39m,
+      [32m'React'[39m,
+      [32m'user experience'[39m
+    ],
+    name: [32m'Frontend Developer'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[11:08:18.566][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713698561'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:08:18.567][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713698561'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:08:18.700][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    capabilities: [
+      [32m'testing'[39m,
+      [32m'quality assurance'[39m,
+      [32m'performance optimization'[39m
+    ],
+    name: [32m'QA Engineer'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[11:08:18.725][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713698701'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:08:18.725][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713698701'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:09.488][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    maxAgents: [33m7[39m,
+    strategy: [32m'specialized'[39m,
+    topology: [32m'hierarchical'[39m
+  }
+}
+[2m[11:10:09.496][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751713809493'[39m
+}
+[2m[11:10:09.666][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'Documentation Analyst'[39m,
+    type: [32m'researcher'[39m
+  }
+}
+[2m[11:10:09.681][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713809669'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:09.684][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713809669'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:09.909][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'System Architect'[39m,
+    type: [32m'architect'[39m
+  }
+}
+[2m[11:10:09.911][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m MCP Warning
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  context: {
+    activeSwarms: [
+      [32m'swarm-1751702662987'[39m,
+      [32m'swarm-1751708124603'[39m,
+      [32m'swarm-1751710563904'[39m,
+      [32m'swarm-1751710798309'[39m,
+      [32m'swarm-1751711640946'[39m,
+      [32m'swarm-1751712270737'[39m,
+      [32m'swarm-1751713698001'[39m,
+      [32m'swarm-1751713809493'[39m
+    ],
+    operation: [32m'agent_spawning'[39m,
+    params: {
+      name: [32m'System Architect'[39m,
+      type: [32m'architect'[39m
+    },
+    rawParams: {
+      name: [32m'System Architect'[39m,
+      type: [32m'architect'[39m
+    },
+    startTime: [33m16104.373145[39m,
+    timestamp: [32m'2025-07-05T11:10:09.910Z'[39m,
+    tool: [32m'agent_spawn'[39m,
+    validating: [32m'agent_spawn'[39m
+  },
+  error: {
+    code: [32m'VALIDATION_ERROR'[39m,
+    message: [32m'type must be one of: researcher, coder, analyst, optimizer, coordinator, tester, reviewer, documenter'[39m,
+    name: [32m'ValidationError'[39m,
+    stack: [32m'ValidationError: type must be one of: researcher, coder, analyst, optimizer, coordinator, tester, reviewer, documenter\n'[39m +
+      [32m'    at BaseValidator.validateValue (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:104:13)\n'[39m +
+      [32m'    at BaseValidator.validate (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:14:19)\n'[39m +
+      [32m'    at ValidationUtils.validateParams (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/schemas.js:732:52)\n'[39m +
+      [32m'    at EnhancedMCPTools.validateToolParams (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:189:47)\n'[39m +
+      [32m'    at EnhancedMCPTools.agent_spawn (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/src/mcp-tools-enhanced.js:573:36)\n'[39m +
+      [32m'    at handleMcpRequest (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:1433:72)\n'[39m +
+      [32m'    at Socket.<anonymous> (file:///usr/local/share/nvm/versions/node/v22.16.0/lib/node_modules/ruv-swarm/bin/ruv-swarm-clean.js:515:29)\n'[39m +
+      [32m'    at Socket.emit (node:events:530:35)\n'[39m +
+      [32m'    at addChunk (node:internal/streams/readable:561:12)\n'[39m +
+      [32m'    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)'[39m
+  },
+  operation: [32m'agent_spawning'[39m,
+  recoverable: [33mtrue[39m,
+  severity: [32m'medium'[39m,
+  suggestions: [
+    [32m"Check the 'type' parameter"[39m,
+    [32m'Expected type: enum(researcher|coder|analyst|optimizer|coordinator|tester|reviewer|documenter), got: string'[39m
+  ],
+  tool: [32m'agent_spawn'[39m
+}
+[2m[11:10:10.077][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'Backend Developer'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[11:10:10.090][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713810082'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:10.091][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713810082'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:10.242][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'Frontend Developer'[39m,
+    type: [32m'coder'[39m
+  }
+}
+[2m[11:10:10.251][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713810243'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:10.252][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713810243'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:10.381][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'Test Engineer'[39m,
+    type: [32m'analyst'[39m
+  }
+}
+[2m[11:10:10.391][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713810383'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:10.392][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713810383'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:10.531][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'Project Manager'[39m,
+    type: [32m'coordinator'[39m
+  }
+}
+[2m[11:10:10.540][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713810532'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:10.540][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713810532'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:10:10.688][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Spawning agent
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    name: [32m'DevOps Engineer'[39m,
+    type: [32m'optimizer'[39m
+  }
+}
+[2m[11:10:10.705][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Agent already exists in database, updating existing record
+{
+  agentId: [32m'agent-1751713810689'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: agents.id'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
+[2m[11:10:10.706][0m [31m❌ ERROR[0m [1m[mcp-tools][0m Failed to update existing agent record
+{
+  agentId: [32m'agent-1751713810689'[39m,
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'this.persistence.updateAgent is not a function'[39m
+}
+[2m[11:11:05.305][0m [33m⚠️  WARN [0m [1m[mcp-tools][0m Failed to persist task
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  error: [32m'UNIQUE constraint failed: tasks.id'[39m,
+  taskId: [32m'task-1751713865297'[39m
+}
