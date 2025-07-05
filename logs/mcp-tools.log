@@ -1,0 +1,17 @@
+[2m[08:04:22.986][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Initializing swarm
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  params: {
+    enableCognitiveDiversity: [33mtrue[39m,
+    enableForecasting: [33mfalse[39m,
+    enableNeuralAgents: [33mtrue[39m,
+    maxAgents: [33m5[39m,
+    strategy: [32m'balanced'[39m,
+    topology: [32m'mesh'[39m
+  }
+}
+[2m[08:04:22.991][0m [32mℹ️  INFO [0m [1m[mcp-tools][0m Swarm created successfully
+{
+  component: [32m'mcp-tools-enhanced'[39m,
+  swarmId: [32m'swarm-1751702662987'[39m
+}
