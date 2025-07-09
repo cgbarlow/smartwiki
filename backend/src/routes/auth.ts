@@ -5,19 +5,27 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '@/config/database';
 import { config } from '@/config/config';
 import { logger } from '@/utils/logger';
-import { authMiddleware } from '@/middleware/auth';
+import { 
+  authMiddleware, 
+  authRateLimit, 
+  passwordResetRateLimit,
+  checkAccountLockout 
+} from '@/middleware/auth';
+import { authService } from '@/services/authService';
+import { invitationService } from '@/services/invitationService';
 
 const router = Router();
 
 /**
  * User registration
  */
-router.post('/register', [
+router.post('/register', authRateLimit, [
   body('email').isEmail().normalizeEmail(),
-  body('username').isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/),
+  body('username').optional().isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/),
   body('password').isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
   body('firstName').optional().isLength({ min: 1, max: 50 }),
   body('lastName').optional().isLength({ min: 1, max: 50 }),
+  body('tenantId').isUUID().withMessage('Valid tenant ID is required'),
 ], async (req: Request, res: Response) => {
   try {
     // Check validation errors
@@ -30,80 +38,38 @@ router.post('/register', [
       });
     }
 
-    const { email, username, password, firstName, lastName } = req.body;
+    const { email, username, password, firstName, lastName, tenantId } = req.body;
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { username },
-        ],
-      },
+    // Use enhanced auth service
+    const result = await authService.registerUser({
+      email,
+      username,
+      password,
+      firstName,
+      lastName,
+      tenantId,
     });
 
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'User already exists with this email or username',
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        username,
-        password: hashedPassword,
-        firstName,
-        lastName,
-      },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      config.auth.jwtSecret,
-      { expiresIn: config.auth.jwtExpiresIn }
-    );
-
-    // Generate refresh token
-    const refreshToken = jwt.sign(
-      { userId: user.id, type: 'refresh' },
-      config.auth.jwtSecret,
-      { expiresIn: config.auth.jwtRefreshExpiresIn }
-    );
-
-    logger.info(`👤 User registered: ${user.email}`);
+    logger.info(`👤 User registered: ${result.user.email}`);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
-      data: {
-        user,
-        token,
-        refreshToken,
-      },
+      data: result,
     });
 
   } catch (error) {
     logger.error('❌ Registration failed:', error);
-    res.status(500).json({
+    
+    const message = error instanceof Error ? error.message : 'Registration failed';
+    const statusCode = message.includes('already exists') ? 409 : 
+                      message.includes('limit exceeded') ? 429 : 
+                      message.includes('Invalid') ? 400 : 500;
+
+    res.status(statusCode).json({
       success: false,
-      message: 'Registration failed',
-      error: 'Internal server error',
+      message,
+      error: statusCode === 500 ? 'Internal server error' : undefined,
     });
   }
 });
@@ -111,9 +77,11 @@ router.post('/register', [
 /**
  * User login
  */
-router.post('/login', [
+router.post('/login', authRateLimit, checkAccountLockout, [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 1 }),
+  body('mfaCode').optional().isLength({ min: 6, max: 6 }).isNumeric(),
+  body('tenantId').optional().isUUID(),
 ], async (req: Request, res: Response) => {
   try {
     // Check validation errors
@@ -126,82 +94,50 @@ router.post('/login', [
       });
     }
 
-    const { email, password } = req.body;
+    const { email, password, mfaCode, tenantId } = req.body;
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
+    // Use enhanced auth service
+    const result = await authService.login({
+      email,
+      password,
+      mfaCode,
+      tenantId,
     });
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials',
+    if (result.requiresMFA) {
+      return res.status(200).json({
+        success: true,
+        message: 'MFA code required',
+        requiresMFA: true,
+        data: {
+          user: result.user,
+        },
       });
     }
 
-    // Check if user is active
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is deactivated',
-      });
-    }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials',
-      });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      config.auth.jwtSecret,
-      { expiresIn: config.auth.jwtExpiresIn }
-    );
-
-    // Generate refresh token
-    const refreshToken = jwt.sign(
-      { userId: user.id, type: 'refresh' },
-      config.auth.jwtSecret,
-      { expiresIn: config.auth.jwtRefreshExpiresIn }
-    );
-
-    // Update last login
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { updatedAt: new Date() },
-    });
-
-    logger.info(`🔐 User logged in: ${user.email}`);
+    logger.info(`🔐 User logged in: ${result.user.email}`);
 
     res.json({
       success: true,
       message: 'Login successful',
       data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-        },
-        token,
-        refreshToken,
+        user: result.user,
+        tokens: result.tokens,
       },
     });
 
   } catch (error) {
     logger.error('❌ Login failed:', error);
-    res.status(500).json({
+    
+    const message = error instanceof Error ? error.message : 'Login failed';
+    const statusCode = message.includes('Invalid credentials') ? 401 :
+                      message.includes('deactivated') ? 401 :
+                      message.includes('locked') ? 429 : 500;
+
+    res.status(statusCode).json({
       success: false,
-      message: 'Login failed',
-      error: 'Internal server error',
+      message,
+      error: statusCode === 500 ? 'Internal server error' : undefined,
     });
   }
 });
@@ -392,6 +328,261 @@ router.post('/logout', authMiddleware, (req: Request, res: Response) => {
     success: true,
     message: 'Logged out successfully',
   });
+});
+
+/**
+ * Setup MFA
+ */
+router.post('/mfa/setup', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const mfaSetup = await authService.setupMFA(req.user.userId);
+
+    res.json({
+      success: true,
+      message: 'MFA setup initiated',
+      data: mfaSetup,
+    });
+
+  } catch (error) {
+    logger.error('❌ MFA setup failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'MFA setup failed',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Enable MFA
+ */
+router.post('/mfa/enable', authMiddleware, [
+  body('verificationCode').isLength({ min: 6, max: 6 }).isNumeric(),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { verificationCode } = req.body;
+
+    await authService.enableMFA(req.user.userId, verificationCode);
+
+    res.json({
+      success: true,
+      message: 'MFA enabled successfully',
+    });
+
+  } catch (error) {
+    logger.error('❌ MFA enable failed:', error);
+    const message = error instanceof Error ? error.message : 'MFA enable failed';
+    res.status(400).json({
+      success: false,
+      message,
+    });
+  }
+});
+
+/**
+ * Disable MFA
+ */
+router.post('/mfa/disable', authMiddleware, [
+  body('password').isLength({ min: 1 }),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { password } = req.body;
+
+    await authService.disableMFA(req.user.userId, password);
+
+    res.json({
+      success: true,
+      message: 'MFA disabled successfully',
+    });
+
+  } catch (error) {
+    logger.error('❌ MFA disable failed:', error);
+    const message = error instanceof Error ? error.message : 'MFA disable failed';
+    res.status(400).json({
+      success: false,
+      message,
+    });
+  }
+});
+
+/**
+ * Send team invitation
+ */
+router.post('/invite', authMiddleware, [
+  body('email').isEmail().normalizeEmail(),
+  body('roleId').isUUID(),
+  body('message').optional().isLength({ max: 500 }),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { email, roleId, message } = req.body;
+
+    const result = await invitationService.inviteUser({
+      email,
+      tenantId: req.user.tenantId,
+      roleId,
+      invitedBy: req.user.userId,
+      message,
+    });
+
+    res.json({
+      success: true,
+      message: 'Invitation sent successfully',
+      data: result,
+    });
+
+  } catch (error) {
+    logger.error('❌ Invitation failed:', error);
+    const message = error instanceof Error ? error.message : 'Invitation failed';
+    const statusCode = message.includes('already exists') ? 409 :
+                      message.includes('limit exceeded') ? 429 :
+                      message.includes('Invalid') ? 400 : 500;
+
+    res.status(statusCode).json({
+      success: false,
+      message,
+      error: statusCode === 500 ? 'Internal server error' : undefined,
+    });
+  }
+});
+
+/**
+ * Accept team invitation
+ */
+router.post('/accept-invitation', authRateLimit, [
+  body('token').isUUID(),
+  body('firstName').isLength({ min: 1, max: 50 }),
+  body('lastName').isLength({ min: 1, max: 50 }),
+  body('password').isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
+  body('username').optional().isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { token, firstName, lastName, password, username } = req.body;
+
+    const result = await invitationService.acceptInvitation({
+      token,
+      firstName,
+      lastName,
+      password,
+      username,
+    });
+
+    res.json({
+      success: true,
+      message: 'Invitation accepted successfully',
+      data: result,
+    });
+
+  } catch (error) {
+    logger.error('❌ Invitation acceptance failed:', error);
+    const message = error instanceof Error ? error.message : 'Invitation acceptance failed';
+    const statusCode = message.includes('Invalid') ? 400 :
+                      message.includes('expired') ? 410 :
+                      message.includes('already exists') ? 409 : 500;
+
+    res.status(statusCode).json({
+      success: false,
+      message,
+      error: statusCode === 500 ? 'Internal server error' : undefined,
+    });
+  }
+});
+
+/**
+ * Reject team invitation
+ */
+router.post('/reject-invitation', [
+  body('token').isUUID(),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { token } = req.body;
+
+    await invitationService.rejectInvitation(token);
+
+    res.json({
+      success: true,
+      message: 'Invitation rejected successfully',
+    });
+
+  } catch (error) {
+    logger.error('❌ Invitation rejection failed:', error);
+    const message = error instanceof Error ? error.message : 'Invitation rejection failed';
+    res.status(400).json({
+      success: false,
+      message,
+    });
+  }
+});
+
+/**
+ * Get tenant invitations
+ */
+router.get('/invitations', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const { status } = req.query;
+
+    const invitations = await invitationService.getTenantInvitations(
+      req.user.tenantId,
+      status as string
+    );
+
+    res.json({
+      success: true,
+      data: { invitations },
+    });
+
+  } catch (error) {
+    logger.error('❌ Failed to get invitations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get invitations',
+      error: 'Internal server error',
+    });
+  }
 });
 
 export default router;

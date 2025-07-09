@@ -4,6 +4,9 @@ import { prisma } from '@/config/database';
 import { logger } from '@/utils/logger';
 import { authMiddleware } from '@/middleware/auth';
 import { validationMiddleware } from '@/middleware/validation';
+import { ComplianceAgent } from '@/agents/compliance/ComplianceAgent';
+import { AgentRegistry } from '@/agents/core/AgentRegistry';
+import { StandardsLibrary } from '@/agents/compliance/standards/StandardsLibrary';
 
 const router = Router();
 
@@ -522,5 +525,353 @@ router.post('/:id/test', [
     });
   }
 });
+
+/**
+ * Create a compliance agent
+ */
+router.post('/compliance', [
+  body('name').isString().isLength({ min: 1, max: 100 }),
+  body('description').optional().isString().isLength({ max: 500 }),
+  body('modelProvider').optional().isIn(['mistral', 'openai', 'anthropic']),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { name, description, modelProvider = 'mistral' } = req.body;
+
+    // Create compliance agent
+    const agentId = `compliance-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const complianceAgent = new ComplianceAgent(agentId, name, modelProvider);
+
+    // Validate configuration
+    const validation = await complianceAgent.validateConfiguration();
+    if (!validation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Agent configuration validation failed',
+        errors: validation.issues,
+      });
+    }
+
+    // Create agent in database
+    const agent = await prisma.agent.create({
+      data: {
+        id: agentId,
+        name,
+        description,
+        type: 'COMPLIANCE',
+        status: 'ACTIVE',
+        configuration: {
+          modelProvider,
+          capabilities: {
+            documentAnalysis: true,
+            standardsComparison: true,
+            gapIdentification: true,
+            reportGeneration: true,
+            riskAssessment: true,
+          },
+        },
+        isActive: true,
+        createdById: req.user.userId,
+        tenantId: req.user.tenantId,
+      },
+      include: {
+        createdBy: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+
+    // Register agent in registry
+    await AgentRegistry.saveAgentToDatabase(agentId, req.user.tenantId, req.user.userId);
+
+    logger.info(`🤖 Compliance agent created: ${agent.id} by user ${req.user.userId}`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Compliance agent created successfully',
+      data: { 
+        agent,
+        status: complianceAgent.getStatus(),
+      },
+    });
+
+  } catch (error) {
+    logger.error('❌ Compliance agent creation failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Compliance agent creation failed',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Analyze document compliance
+ */
+router.post('/:id/analyze', [
+  param('id').isString().isLength({ min: 1 }),
+  body('documentId').isString().isLength({ min: 1 }),
+  body('standardIds').isArray().isLength({ min: 1 }),
+  body('options').optional().isObject(),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { id } = req.params;
+    const { documentId, standardIds, options = {} } = req.body;
+
+    // Get agent from database
+    const dbAgent = await prisma.agent.findUnique({
+      where: { id, type: 'COMPLIANCE' },
+    });
+
+    if (!dbAgent || !dbAgent.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: 'Compliance agent not found or inactive',
+      });
+    }
+
+    // Get document
+    const document = await prisma.file.findUnique({
+      where: { 
+        id: documentId,
+        tenantId: req.user.tenantId,
+      },
+    });
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: 'Document not found',
+      });
+    }
+
+    // Create compliance agent instance
+    const complianceAgent = new ComplianceAgent(
+      id, 
+      dbAgent.name, 
+      (dbAgent.configuration as any)?.modelProvider || 'mistral'
+    );
+
+    // Get document content (you might need to implement this based on your file storage)
+    const documentContent = await getDocumentContent(document);
+
+    // Perform analysis
+    const analysisResult = await complianceAgent.analyzeCompliance(
+      {
+        id: document.id,
+        title: document.originalName,
+        content: documentContent,
+      },
+      standardIds,
+      req.user.userId,
+      options
+    );
+
+    logger.info(`🔍 Compliance analysis completed: ${analysisResult.id}`);
+
+    res.json({
+      success: true,
+      message: 'Compliance analysis completed',
+      data: { 
+        analysis: analysisResult,
+        agentStatus: complianceAgent.getStatus(),
+      },
+    });
+
+  } catch (error) {
+    logger.error('❌ Compliance analysis failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Compliance analysis failed',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Generate compliance report
+ */
+router.post('/:id/report', [
+  param('id').isString().isLength({ min: 1 }),
+  body('analysisId').isString().isLength({ min: 1 }),
+  body('format').optional().isIn(['pdf', 'docx', 'html', 'json']),
+], async (req: Request, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { id } = req.params;
+    const { analysisId, format = 'pdf' } = req.body;
+
+    // Get agent from database
+    const dbAgent = await prisma.agent.findUnique({
+      where: { id, type: 'COMPLIANCE' },
+    });
+
+    if (!dbAgent || !dbAgent.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: 'Compliance agent not found or inactive',
+      });
+    }
+
+    // Create compliance agent instance
+    const complianceAgent = new ComplianceAgent(
+      id, 
+      dbAgent.name, 
+      (dbAgent.configuration as any)?.modelProvider || 'mistral'
+    );
+
+    // Generate report
+    const report = await complianceAgent.generateReport(analysisId, format);
+
+    logger.info(`📊 Compliance report generated: ${report.id}`);
+
+    res.json({
+      success: true,
+      message: 'Compliance report generated successfully',
+      data: { report },
+    });
+
+  } catch (error) {
+    logger.error('❌ Compliance report generation failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Compliance report generation failed',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Get compliance standards
+ */
+router.get('/compliance/standards', [
+  query('category').optional().isString(),
+  query('search').optional().isString(),
+], async (req: Request, res: Response) => {
+  try {
+    const { category, search } = req.query;
+    const standardsLibrary = new StandardsLibrary();
+
+    let standards;
+    if (search) {
+      standards = await standardsLibrary.searchStandards(search as string);
+    } else if (category) {
+      standards = await standardsLibrary.getStandardsByCategory(category as string);
+    } else {
+      standards = await standardsLibrary.getAllStandards();
+    }
+
+    res.json({
+      success: true,
+      data: { standards },
+    });
+
+  } catch (error) {
+    logger.error('❌ Failed to get compliance standards:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get compliance standards',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Get compliance analysis history
+ */
+router.get('/:id/analyses', [
+  param('id').isString().isLength({ min: 1 }),
+  validationMiddleware.pagination,
+], async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { page, limit, offset } = req.pagination!;
+
+    // Get analyses for this agent
+    const [analyses, total] = await Promise.all([
+      prisma.complianceAnalysis.findMany({
+        where: { 
+          agentId: id,
+          userId: req.user.userId,
+        },
+        skip: offset,
+        take: limit,
+        orderBy: { analysisDate: 'desc' },
+        include: {
+          gaps: true,
+          recommendations: true,
+          reports: true,
+        },
+      }),
+      prisma.complianceAnalysis.count({
+        where: { 
+          agentId: id,
+          userId: req.user.userId,
+        },
+      }),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        analyses,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      },
+    });
+
+  } catch (error) {
+    logger.error('❌ Failed to get compliance analyses:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get compliance analyses',
+      error: 'Internal server error',
+    });
+  }
+});
+
+/**
+ * Helper function to get document content
+ * This would need to be implemented based on your file storage system
+ */
+async function getDocumentContent(file: any): Promise<string> {
+  // This is a placeholder - implement based on your S3/file storage setup
+  // You might need to download from S3, extract text from PDF, etc.
+  return `Sample document content for ${file.originalName}`;
+}
 
 export default router;

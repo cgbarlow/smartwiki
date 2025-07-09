@@ -10,25 +10,188 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  firstName String?
-  lastName  String?
-  role      Role     @default(USER)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  domain      String?  @unique
+  logo        String?
+  settings    Json?
+  isActive    Boolean  @default(true)
+  planType    String   @default("free")
+  maxUsers    Int      @default(10)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
+  users       User[]
   articles    Article[]
-  comments    Comment[]
-  auditLogs   AuditLog[]
-  preferences UserPreference?
+  invitations TeamInvitation[]
+  files       File[]
+  folders     FileFolder[]
+  
+  // Agent system relations
+  agents      Agent[]
+
+  @@map("tenants")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  username    String?    @unique
+  password    String?
+  firstName   String?
+  lastName    String?
+  avatar      String?
+  role        UserRole   @default(VIEWER)
+  isActive    Boolean    @default(true)
+  isVerified  Boolean    @default(false)
+  lastLoginAt DateTime?
+  loginCount  Int        @default(0)
+  mfaEnabled  Boolean    @default(false)
+  mfaSecret   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Multi-tenancy
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  // Relations
+  articles       Article[]
+  comments       Comment[]
+  auditLogs      AuditLog[]
+  preferences    UserPreference?
+  oauthAccounts  OAuthAccount[]
+  roleAssignments UserRoleAssignment[]
+  invitations    TeamInvitation[]
+  loginAttempts  LoginAttempt[]
+  sessionTokens  SessionToken[]
+  uploadedFiles  File[]
+  processingJobs FileProcessingJob[]
+  createdFolders FileFolder[]
+  
+  // Agent system relations
+  agents         Agent[]
+  queries        Query[]
+  conversations  Conversation[]
+  complianceAnalyses ComplianceAnalysis[]
 
   @@map("users")
+}
+
+model OAuthAccount {
+  id           String @id @default(cuid())
+  userId       String
+  provider     String
+  providerAccountId String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  tokenType    String?
+  scope        String?
+  idToken      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("oauth_accounts")
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  resource    String
+  action      String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  role       Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRoleAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  grantedBy String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_role_assignments")
+}
+
+model TeamInvitation {
+  id        String           @id @default(cuid())
+  email     String
+  tenantId  String
+  invitedBy String
+  roleId    String
+  token     String           @unique
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  inviter   User   @relation(fields: [invitedBy], references: [id])
+  role      Role   @relation(fields: [roleId], references: [id])
+
+  @@unique([email, tenantId])
+  @@map("team_invitations")
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String
+  ipAddress String
+  userAgent String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("login_attempts")
+}
+
+model SessionToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session_tokens")
 }
 
 model Article {
@@ -43,10 +206,12 @@ model Article {
   updatedAt   DateTime      @updatedAt
   authorId    String
   categoryId  String?
+  tenantId    String
 
   // Relations
   author     User      @relation(fields: [authorId], references: [id])
   category   Category? @relation(fields: [categoryId], references: [id])
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
   comments   Comment[]
   tags       Tag[]
   auditLogs  AuditLog[]
@@ -150,10 +315,34 @@ model UserPreference {
   @@map("user_preferences")
 }
 
-enum Role {
-  USER
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  rolePermissions RolePermission[]
+  userRoles       UserRoleAssignment[]
+  invitations     TeamInvitation[]
+
+  @@map("roles")
+}
+
+enum UserRole {
+  GUEST
+  VIEWER
+  EDITOR
   ADMIN
-  MODERATOR
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
 }
 
 enum ArticleStatus {
@@ -174,4 +363,431 @@ enum ComplianceState {
   COMPLIANT
   NON_COMPLIANT
   NEEDS_REVIEW
+}
+
+model File {
+  id            String      @id @default(cuid())
+  originalName  String
+  filename      String      @unique
+  mimeType      String
+  size          Int
+  s3Key         String      @unique
+  s3Bucket      String
+  s3Url         String?
+  checksum      String?
+  metadata      Json?
+  uploadedBy    String
+  tenantId      String
+  folderId      String?
+  isPublic      Boolean     @default(false)
+  uploadStatus  UploadStatus @default(PENDING)
+  virusScanned  Boolean     @default(false)
+  scanResult    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  uploader      User        @relation(fields: [uploadedBy], references: [id])
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  folder        FileFolder? @relation(fields: [folderId], references: [id])
+  conversions   FileConversion[]
+  processingJobs FileProcessingJob[]
+  thumbnails    FileThumbnail[]
+
+  @@map("files")
+}
+
+model FileFolder {
+  id        String   @id @default(cuid())
+  name      String
+  path      String
+  parentId  String?
+  tenantId  String
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  parent   FileFolder? @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children FileFolder[] @relation("FolderHierarchy")
+  files    File[]
+  creator  User        @relation(fields: [createdBy], references: [id])
+  tenant   Tenant      @relation(fields: [tenantId], references: [id])
+
+  @@unique([name, parentId, tenantId])
+  @@map("file_folders")
+}
+
+model FileConversion {
+  id            String           @id @default(cuid())
+  fileId        String
+  fromFormat    String
+  toFormat      String
+  status        ConversionStatus @default(PENDING)
+  convertedS3Key String?
+  convertedUrl  String?
+  convertedSize Int?
+  errorMessage  String?
+  metadata      Json?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@map("file_conversions")
+}
+
+model FileProcessingJob {
+  id          String        @id @default(cuid())
+  fileId      String
+  jobType     ProcessingJobType
+  status      JobStatus     @default(PENDING)
+  priority    JobPriority   @default(MEDIUM)
+  progress    Int           @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  errorMessage String?
+  metadata    Json?
+  createdBy   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  file    File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [createdBy], references: [id])
+
+  @@map("file_processing_jobs")
+}
+
+model FileThumbnail {
+  id        String   @id @default(cuid())
+  fileId    String
+  size      ThumbnailSize
+  s3Key     String   @unique
+  s3Url     String?
+  mimeType  String
+  width     Int
+  height    Int
+  fileSize  Int
+  createdAt DateTime @default(now())
+
+  // Relations
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, size])
+  @@map("file_thumbnails")
+}
+
+enum UploadStatus {
+  PENDING
+  UPLOADING
+  COMPLETED
+  FAILED
+}
+
+enum ConversionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ProcessingJobType {
+  VIRUS_SCAN
+  THUMBNAIL_GENERATION
+  DOCUMENT_CONVERSION
+  METADATA_EXTRACTION
+  TEXT_EXTRACTION
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum JobPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ThumbnailSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+// Agent System Models
+model Agent {
+  id              String      @id @default(cuid())
+  name            String
+  description     String?
+  type            AgentType   @default(GENERAL)
+  status          AgentStatus @default(ACTIVE)
+  configuration   Json?
+  knowledgeBaseIds String[]
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relations
+  createdById     String
+  createdBy       User        @relation(fields: [createdById], references: [id])
+  tenantId        String
+  tenant          Tenant      @relation(fields: [tenantId], references: [id])
+  
+  // Agent activity
+  queries         Query[]
+  conversations   Conversation[]
+  analysisResults ComplianceAnalysis[]
+  
+  @@map("agents")
+}
+
+model Query {
+  id            String      @id @default(cuid())
+  question      String
+  response      String?
+  responseTime  Int?        // in milliseconds
+  tokensUsed    Int?
+  status        QueryStatus @default(PENDING)
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  agentId       String
+  agent         Agent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  conversationId String?
+  conversation  Conversation? @relation(fields: [conversationId], references: [id])
+  
+  @@map("queries")
+}
+
+model Conversation {
+  id          String   @id @default(cuid())
+  title       String?
+  isActive    Boolean  @default(true)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  queries     Query[]
+  
+  @@map("conversations")
+}
+
+// Compliance System Models
+model ComplianceStandard {
+  id            String               @id @default(cuid())
+  name          String
+  version       String
+  category      ComplianceCategory
+  description   String
+  isActive      Boolean              @default(true)
+  lastUpdated   DateTime             @updatedAt
+  createdAt     DateTime             @default(now())
+  
+  // Relations
+  requirements  ComplianceRequirement[]
+  analyses      ComplianceAnalysis[]
+  
+  @@unique([name, version])
+  @@map("compliance_standards")
+}
+
+model ComplianceRequirement {
+  id                String              @id @default(cuid())
+  standardId        String
+  standard          ComplianceStandard  @relation(fields: [standardId], references: [id], onDelete: Cascade)
+  section           String
+  title             String
+  description       String
+  criticality       CriticalityLevel
+  tags              String[]
+  relatedRequirements String[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  // Relations
+  gaps              ComplianceGap[]
+  
+  @@map("compliance_requirements")
+}
+
+model ComplianceAnalysis {
+  id              String              @id @default(cuid())
+  documentId      String?
+  documentTitle   String
+  documentContent String?
+  analysisType    AnalysisType        @default(DOCUMENT)
+  overallScore    Float               @default(0)
+  status          AnalysisStatus      @default(PENDING)
+  analysisDate    DateTime            @default(now())
+  metadata        Json?
+  
+  // Relations
+  agentId         String
+  agent           Agent               @relation(fields: [agentId], references: [id])
+  userId          String
+  user            User                @relation(fields: [userId], references: [id])
+  standards       ComplianceStandard[]
+  gaps            ComplianceGap[]
+  recommendations ComplianceRecommendation[]
+  reports         ComplianceReport[]
+  
+  @@map("compliance_analyses")
+}
+
+model ComplianceGap {
+  id              String                @id @default(cuid())
+  analysisId      String
+  analysis        ComplianceAnalysis    @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  requirementId   String
+  requirement     ComplianceRequirement @relation(fields: [requirementId], references: [id])
+  description     String
+  severity        SeverityLevel
+  evidence        String?
+  confidence      Float                 @default(0)
+  createdAt       DateTime              @default(now())
+  
+  @@map("compliance_gaps")
+}
+
+model ComplianceRecommendation {
+  id          String              @id @default(cuid())
+  analysisId  String
+  analysis    ComplianceAnalysis  @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  priority    PriorityLevel
+  category    String
+  actionItems String[]
+  createdAt   DateTime            @default(now())
+  
+  @@map("compliance_recommendations")
+}
+
+model ComplianceReport {
+  id          String              @id @default(cuid())
+  analysisId  String
+  analysis    ComplianceAnalysis  @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  title       String
+  content     String
+  format      ReportFormat
+  s3Key       String?
+  downloadUrl String?
+  createdAt   DateTime            @default(now())
+  
+  @@map("compliance_reports")
+}
+
+// Model Provider Configuration
+model ModelProvider {
+  id            String              @id @default(cuid())
+  name          String              @unique
+  type          ModelProviderType
+  configuration Json
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  
+  @@map("model_providers")
+}
+
+// Agent System Enums
+enum AgentType {
+  GENERAL
+  RESEARCH
+  CUSTOMER_SERVICE
+  TECHNICAL
+  CREATIVE
+  COMPLIANCE
+  ANALYZER
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  PROCESSING
+  ERROR
+}
+
+enum QueryStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// Compliance System Enums
+enum ComplianceCategory {
+  SECURITY
+  PRIVACY
+  FINANCIAL
+  HEALTHCARE
+  GENERAL
+  INDUSTRY_SPECIFIC
+}
+
+enum CriticalityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AnalysisType {
+  DOCUMENT
+  ARTICLE
+  POLICY
+  PROCEDURE
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum SeverityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PriorityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ReportFormat {
+  PDF
+  DOCX
+  HTML
+  JSON
+}
+
+enum ModelProviderType {
+  MISTRAL
+  OPENAI
+  ANTHROPIC
+  CUSTOM
 }

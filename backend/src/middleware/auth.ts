@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '@/config/config';
 import { logger } from '@/utils/logger';
+import { prisma } from '@/config/database';
+import rateLimit from 'express-rate-limit';
 
 // Extend Request interface to include user information
 declare global {
@@ -11,14 +13,22 @@ declare global {
         userId: string;
         email: string;
         role: string;
+        tenantId: string;
+        permissions?: string[];
+      };
+      tenant?: {
+        id: string;
+        name: string;
+        slug: string;
+        settings: any;
       };
     }
   }
 }
 
 /**
- * Authentication middleware
- * Verifies JWT token and attaches user information to request
+ * Enhanced authentication middleware with multi-tenancy support
+ * Verifies JWT token and attaches user and tenant information to request
  */
 export const authMiddleware = async (
   req: Request,
@@ -48,12 +58,76 @@ export const authMiddleware = async (
       });
     }
 
-    // Attach user information to request
+    // Get user with full details including tenant and permissions
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      include: {
+        tenant: true,
+        roleAssignments: {
+          include: {
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user || !user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found or inactive',
+      });
+    }
+
+    if (!user.tenant.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Tenant is inactive',
+      });
+    }
+
+    // Extract permissions from role assignments
+    const permissions: string[] = [];
+    for (const roleAssignment of user.roleAssignments) {
+      for (const rolePermission of roleAssignment.role.rolePermissions) {
+        const permission = rolePermission.permission;
+        permissions.push(`${permission.resource}:${permission.action}`);
+      }
+    }
+
+    // Attach user and tenant information to request
     req.user = {
-      userId: decoded.userId,
-      email: decoded.email,
-      role: decoded.role,
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      tenantId: user.tenantId,
+      permissions,
     };
+
+    req.tenant = {
+      id: user.tenant.id,
+      name: user.tenant.name,
+      slug: user.tenant.slug,
+      settings: user.tenant.settings,
+    };
+
+    // Log IP address for security
+    const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+    await prisma.loginAttempt.updateMany({
+      where: {
+        userId: user.id,
+        success: true,
+        ipAddress: 'unknown',
+      },
+      data: { ipAddress },
+    });
 
     next();
   } catch (error) {
@@ -139,14 +213,132 @@ export const requireRole = (requiredRoles: string[]) => {
 };
 
 /**
+ * Permission-based authorization middleware
+ */
+export const requirePermission = (resource: string, action: string) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+      });
+    }
+
+    // Admin users have all permissions
+    if (req.user.role === 'ADMIN') {
+      return next();
+    }
+
+    const requiredPermission = `${resource}:${action}`;
+    if (!req.user.permissions?.includes(requiredPermission)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions',
+      });
+    }
+
+    next();
+  };
+};
+
+/**
+ * Tenant isolation middleware
+ */
+export const requireTenant = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user || !req.tenant) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  // Ensure all database queries are scoped to the user's tenant
+  // This can be done by adding tenantId filter to all queries
+  next();
+};
+
+/**
  * Admin role requirement
  */
 export const requireAdmin = requireRole(['ADMIN']);
 
 /**
- * Moderator or Admin role requirement
+ * Editor or Admin role requirement
  */
-export const requireModerator = requireRole(['MODERATOR', 'ADMIN']);
+export const requireEditor = requireRole(['EDITOR', 'ADMIN']);
+
+/**
+ * Viewer, Editor, or Admin role requirement
+ */
+export const requireViewer = requireRole(['VIEWER', 'EDITOR', 'ADMIN']);
+
+/**
+ * Account lockout middleware
+ */
+export const checkAccountLockout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return next();
+    }
+
+    // Check recent failed login attempts
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+    const failedAttempts = await prisma.loginAttempt.count({
+      where: {
+        email,
+        success: false,
+        createdAt: { gte: thirtyMinutesAgo },
+      },
+    });
+
+    // Lock account after 5 failed attempts
+    if (failedAttempts >= 5) {
+      return res.status(429).json({
+        success: false,
+        message: 'Account temporarily locked due to too many failed login attempts',
+        lockoutMinutes: 30,
+      });
+    }
+
+    next();
+  } catch (error) {
+    logger.error('Account lockout check failed:', error);
+    next(); // Continue on error
+  }
+};
+
+/**
+ * Rate limiting for authentication endpoints
+ */
+export const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many authentication attempts, please try again later',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Rate limiting for password reset
+ */
+export const passwordResetRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // limit each IP to 3 password reset requests per hour
+  message: {
+    success: false,
+    message: 'Too many password reset attempts, please try again later',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 /**
  * API Key authentication middleware

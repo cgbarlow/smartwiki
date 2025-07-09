@@ -50,8 +50,17 @@ const envSchema = z.object({
   
   // File Upload
   MAX_FILE_SIZE: z.string().default('50MB'),
-  ALLOWED_FILE_TYPES: z.string().default('pdf,doc,docx,txt,md,csv,json'),
+  ALLOWED_FILE_TYPES: z.string().default('pdf,doc,docx,txt,md,csv,json,png,jpg,jpeg,gif,svg'),
   UPLOAD_DIR: z.string().default('./uploads'),
+  ENABLE_VIRUS_SCANNING: z.string().transform(val => val === 'true').default('false'),
+  CLAMAV_HOST: z.string().default('localhost'),
+  CLAMAV_PORT: z.string().transform(Number).default('3310'),
+  
+  // File Processing
+  ENABLE_FILE_CONVERSION: z.string().transform(val => val === 'true').default('true'),
+  ENABLE_THUMBNAIL_GENERATION: z.string().transform(val => val === 'true').default('true'),
+  THUMBNAIL_SIZES: z.string().default('150x150,300x300,600x600'),
+  PROCESSING_CONCURRENCY: z.string().transform(Number).default('3'),
   
   // Logging
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).default('info'),
@@ -184,6 +193,20 @@ export const config = {
     maxFileSize: parseFileSize(env.MAX_FILE_SIZE),
     allowedTypes: env.ALLOWED_FILE_TYPES.split(',').map(type => type.trim()),
     uploadDir: env.UPLOAD_DIR,
+    enableVirusScanning: env.ENABLE_VIRUS_SCANNING,
+    clamavHost: env.CLAMAV_HOST,
+    clamavPort: env.CLAMAV_PORT,
+  },
+  
+  // File Processing
+  processing: {
+    enableFileConversion: env.ENABLE_FILE_CONVERSION,
+    enableThumbnailGeneration: env.ENABLE_THUMBNAIL_GENERATION,
+    thumbnailSizes: env.THUMBNAIL_SIZES.split(',').map(size => {
+      const [width, height] = size.trim().split('x').map(Number);
+      return { width, height };
+    }),
+    concurrency: env.PROCESSING_CONCURRENCY,
   },
   
   // Logging

@@ -19,14 +19,17 @@ import { validationMiddleware } from '@/middleware/validation';
 import { prisma } from '@/config/database';
 import { setupSwagger } from '@/config/swagger';
 import { metricsMiddleware } from '@/middleware/metrics';
+import { AgentService } from '@/services/agentService';
 
 // Import routes
 import authRoutes from '@/routes/auth';
+import oauthRoutes from '@/routes/oauth';
 import documentRoutes from '@/routes/documents';
 import agentRoutes from '@/routes/agents';
 import knowledgeBaseRoutes from '@/routes/knowledgeBase';
 import queryRoutes from '@/routes/queries';
 import tenantRoutes from '@/routes/tenants';
+import fileRoutes from '@/routes/files';
 import healthRoutes from '@/routes/health';
 
 class SmartWikiServer {
@@ -118,6 +121,7 @@ class SmartWikiServer {
     
     // Authentication routes (public)
     apiRouter.use('/auth', authRoutes);
+    apiRouter.use('/oauth', oauthRoutes);
     
     // Protected routes
     apiRouter.use(authMiddleware);
@@ -126,6 +130,7 @@ class SmartWikiServer {
     apiRouter.use('/agents', agentRoutes);
     apiRouter.use('/knowledge-bases', knowledgeBaseRoutes);
     apiRouter.use('/queries', queryRoutes);
+    apiRouter.use('/files', fileRoutes);
 
     this.app.use(`/api/${config.api.version}`, apiRouter);
 
@@ -159,6 +164,11 @@ class SmartWikiServer {
       // Test database connection
       await prisma.$connect();
       logger.info('✅ Database connected successfully');
+
+      // Initialize agent system
+      const agentService = AgentService.getInstance();
+      await agentService.initialize();
+      logger.info('🤖 Agent system initialized successfully');
 
       // Start server
       this.server = createServer(this.app);
